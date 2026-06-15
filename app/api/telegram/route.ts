@@ -91,7 +91,10 @@ export async function POST(req: NextRequest) {
 
     // Security: only your account
     if (ALLOWED_CHAT_ID && chatId !== ALLOWED_CHAT_ID) {
-      await sendTelegramMessage(chatId, "This bot is private. Sorry!");
+      await sendTelegramMessage(
+        chatId,
+        `This bot is private. Your chat ID is: ${chatId}\n\nIf this is you, set ALLOWED_CHAT_ID to this exact number on Vercel and redeploy.`
+      );
       return new Response("ok");
     }
 
