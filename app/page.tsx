@@ -10,6 +10,11 @@ import {
   ArrowUpDown, Lightbulb 
 } from "lucide-react";
 
+// Dynamic date helpers (so real data, not just the Nov sample, shows up)
+const TODAY = new Date().toISOString().split("T")[0];
+const EARLY_DATE = "2020-01-01";
+const MAX_AMOUNT = 1000000;
+
 // Brand colors
 const LIME = "#89F336";
 const BLUE = "#0000FF";
@@ -55,10 +60,10 @@ export default function PersonalFinanceDashboard() {
   // === Advanced Filter State ===
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...ALL_CATEGORIES]);
-  const [dateFrom, setDateFrom] = useState("2025-11-01");
-  const [dateTo, setDateTo] = useState("2025-11-28");
+  const [dateFrom, setDateFrom] = useState(EARLY_DATE);
+  const [dateTo, setDateTo] = useState(TODAY);
   const [minAmount, setMinAmount] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(2000);
+  const [maxAmount, setMaxAmount] = useState(MAX_AMOUNT);
   const [sortBy, setSortBy] = useState<"date" | "amount" | "description">("date");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
 
@@ -205,20 +210,19 @@ export default function PersonalFinanceDashboard() {
   };
 
   const setQuickDate = (days: number) => {
-    const end = "2025-11-28";
-    const start = new Date("2025-11-28");
+    const start = new Date();
     start.setDate(start.getDate() - days);
     setDateFrom(start.toISOString().split("T")[0]);
-    setDateTo(end);
+    setDateTo(TODAY);
   };
 
   const resetFilters = () => {
     setSearchTerm("");
     setSelectedCategories([...ALL_CATEGORIES]);
-    setDateFrom("2025-11-01");
-    setDateTo("2025-11-28");
+    setDateFrom(EARLY_DATE);
+    setDateTo(TODAY);
     setMinAmount(0);
-    setMaxAmount(2000);
+    setMaxAmount(MAX_AMOUNT);
     setSortBy("date");
     setSortDir("desc");
   };
@@ -388,7 +392,7 @@ export default function PersonalFinanceDashboard() {
                 {[7, 14, 30].map(d => (
                   <button key={d} onClick={() => setQuickDate(d)} className="pill text-xs px-3 py-1 active:scale-[0.985]">{d}d</button>
                 ))}
-                <button onClick={() => { setDateFrom("2025-11-01"); setDateTo("2025-11-28"); }} className="pill text-xs px-3 py-1">All</button>
+                <button onClick={() => { setDateFrom(EARLY_DATE); setDateTo(TODAY); }} className="pill text-xs px-3 py-1">All</button>
               </div>
               <div className="flex gap-2">
                 <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="glass flex-1 px-3 py-2 text-sm rounded-2xl bg-transparent border border-white/15" />
