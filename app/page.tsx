@@ -66,25 +66,26 @@ export default function PersonalFinanceDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch real transactions from Supabase once deployed
-  React.useEffect(() => {
-    async function loadTransactions() {
-      try {
-        const res = await fetch("/api/transactions");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setTransactions(data);
-          }
+  // Fetch real transactions from Supabase
+  const loadTransactions = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/transactions");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setTransactions(data);
         }
-      } catch (e) {
-        console.error("Failed to load transactions", e);
-      } finally {
-        setIsLoading(false);
       }
+    } catch (e) {
+      console.error("Failed to load transactions", e);
+    } finally {
+      setIsLoading(false);
     }
-    loadTransactions();
   }, []);
+
+  React.useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
   // === Live Filtering ===
   const filteredTransactions = useMemo(() => {
@@ -243,19 +244,56 @@ export default function PersonalFinanceDashboard() {
   const [newDesc, setNewDesc] = useState("");
   const [newAmount, setNewAmount] = useState(100);
   const [newCat, setNewCat] = useState("food");
+  const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [isSaving, setIsSaving] = useState(false);
 
-  const addManual = () => {
-    if (!newDesc) return;
-    const newTxn: Transaction = {
-      id: "manual-" + Date.now(),
-      date: "2025-11-28",
-      description: newDesc,
-      category: newCat,
-      amount: newAmount,
-    };
-    setTransactions(prev => [newTxn, ...prev]);
-    setNewDesc("");
-    setShowAdd(false);
+  const addManual = async () => {
+    if (!newDesc || isSaving) return;
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: newDate,
+          description: newDesc,
+          category: newCat,
+          amount: newAmount,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert("Could not save: " + (err.error || res.status));
+        return;
+      }
+      await loadTransactions();
+      setNewDesc("");
+      setNewAmount(100);
+      setShowAdd(false);
+    } catch (e) {
+      console.error(e);
+      alert("Could not save. Check your connection.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const deleteTransaction = async (id: string) => {
+    if (!confirm("Delete this transaction? This cannot be undone.")) return;
+    // optimistic removal
+    setTransactions(prev => prev.filter(t => t.id !== id));
+    try {
+      const res = await fetch(`/api/transactions?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        alert("Delete failed on server, reloading.");
+        await loadTransactions();
+      }
+    } catch (e) {
+      console.error(e);
+      await loadTransactions();
+    }
   };
 
   // Export current filtered view as CSV
@@ -597,8 +635,9 @@ export default function PersonalFinanceDashboard() {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-right font-medium tabular-nums text-lime">₹{t.amount}</td>
-                      <td className="px-5 py-3 text-right">
-                        <button onClick={() => filterByCategory(t.category)} className="text-xs text-white/50 hover:text-lime">filter cat</button>
+                      <td className="px-5 py-3 text-right whitespace-nowrap">
+                        <button onClick={() => filterByCategory(t.category)} className="text-xs text-white/40 hover:text-lime mr-3">filter</button>
+                        <button onClick={() => deleteTransaction(t.id)} className="text-xs text-white/40 hover:text-red-400">delete</button>
                       </td>
                     </tr>
                   ))
@@ -613,8 +652,8 @@ export default function PersonalFinanceDashboard() {
         {/* Footer actions + note */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between text-xs text-white/50 px-1">
           <div>
-            This is currently demo data based on your past Google Sheet exports. 
-            Send a real voice note via Telegram and it will appear here live.
+            Live data from your database. Send a voice note via Telegram or use Add expense,
+            and it appears here instantly.
           </div>
           <button onClick={resetFilters} className="btn-ghost px-5 py-2 text-xs">Clear everything &amp; see full picture</button>
         </div>
@@ -624,27 +663,29 @@ export default function PersonalFinanceDashboard() {
       {showAdd && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]" onClick={() => setShowAdd(false)}>
           <div className="glass p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
-            <div className="font-semibold text-xl mb-5 tracking-tight">Add manual expense (demo)</div>
-            
-            <input 
-              value={newDesc} 
-              onChange={e => setNewDesc(e.target.value)} 
-              placeholder="Description (shawarma, petrol...)" 
-              className="glass w-full mb-3 px-4 py-3 rounded-2xl" 
+            <div className="font-semibold text-xl mb-5 tracking-tight">Add expense</div>
+
+            <input
+              value={newDesc}
+              onChange={e => setNewDesc(e.target.value)}
+              placeholder="Description (shawarma, petrol...)"
+              className="glass w-full mb-3 px-4 py-3 rounded-2xl"
             />
-            
-            <div className="grid grid-cols-2 gap-3 mb-4">
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <input type="number" value={newAmount} onChange={e => setNewAmount(Number(e.target.value))} className="glass px-4 py-3 rounded-2xl" placeholder="Amount" />
               <select value={newCat} onChange={e => setNewCat(e.target.value)} className="glass px-4 py-3 rounded-2xl">
                 {ALL_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
+            <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="glass w-full mb-4 px-4 py-3 rounded-2xl" />
+
             <div className="flex gap-3">
               <button onClick={() => setShowAdd(false)} className="btn-ghost flex-1 py-3">Cancel</button>
-              <button onClick={addManual} className="btn-primary flex-1 py-3">Add to dashboard</button>
+              <button onClick={addManual} disabled={isSaving} className="btn-primary flex-1 py-3 disabled:opacity-50">{isSaving ? "Saving..." : "Save expense"}</button>
             </div>
-            <div className="text-[10px] text-center mt-3 text-white/40">This only affects the current session for demo purposes.</div>
+            <div className="text-[10px] text-center mt-3 text-white/40">Saved to your database. Appears everywhere instantly.</div>
           </div>
         </div>
       )}
