@@ -232,7 +232,8 @@ export default function PersonalFinanceDashboard() {
   };
 
   // Click pie / top expense → filter
-  const filterByCategory = (cat: string) => {
+  const filterByCategory = (cat: string | undefined) => {
+    if (!cat) return;
     setSelectedCategories([cat]);
     setSearchTerm("");
   };
