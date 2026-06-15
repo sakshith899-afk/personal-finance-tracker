@@ -4,9 +4,6 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Personal Finance • Tracker",
   description: "Track daily expenses via Telegram. Clean analytics dashboard.",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({

@@ -319,48 +319,48 @@ export default function PersonalFinanceDashboard() {
     <div className="min-h-screen text-white bg-[#0a0b14]" style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif' }}>
       {/* Glass Header */}
       <header className="glass-strong sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl">
-        <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-lime flex items-center justify-center shadow-lg shadow-lime/30">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-2xl bg-lime flex items-center justify-center shadow-lg shadow-lime/30 flex-shrink-0">
               <span className="text-black font-bold text-xl tracking-[-1.5px]">P</span>
             </div>
-            <div>
-              <div className="font-semibold tracking-[-0.8px] text-2xl">Personal Finance</div>
+            <div className="min-w-0">
+              <div className="font-semibold tracking-[-0.8px] text-lg sm:text-2xl truncate">Personal Finance</div>
               <div className="text-[10px] text-white/50 -mt-1.5">TRACKER • GLASS</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-sm">
-            <div className="px-4 py-1.5 rounded-2xl glass text-xs text-white/70 flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 text-sm flex-shrink-0">
+            <div className="hidden md:flex px-4 py-1.5 rounded-2xl glass text-xs text-white/70 items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-lime animate-pulse" /> TELEGRAM LIVE
             </div>
-            <button 
+            <button
               onClick={() => setShowAdd(true)}
-              className="btn-primary px-5 py-2 flex items-center gap-2 text-sm"
+              className="btn-primary px-3 sm:px-5 py-2 flex items-center gap-2 text-sm"
             >
-              <Plus size={16} /> Add Manual
+              <Plus size={16} /> <span className="hidden sm:inline">Add Manual</span>
             </button>
-            <button onClick={exportCSV} className="btn-secondary px-4 py-2 flex items-center gap-2 text-sm">
-              <Download size={15} /> Export CSV
+            <button onClick={exportCSV} className="btn-secondary px-3 sm:px-4 py-2 flex items-center gap-2 text-sm">
+              <Download size={15} /> <span className="hidden sm:inline">Export CSV</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 xl:px-12 py-8">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-6 sm:py-8">
         {/* Hero */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-6 gap-3">
           <div>
             <div className="uppercase tracking-[3px] text-xs text-white/50 mb-1">WHERE IS YOUR MONEY ACTUALLY GOING?</div>
-            <h1 className="text-5xl font-semibold tracking-[-2.2px]">Find the leaks.<br />Cut the waste.</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-2.2px]">Find the leaks.<br />Cut the waste.</h1>
           </div>
-          <div className="text-sm text-white/60 max-w-[260px]">
+          <div className="text-sm text-white/60 md:max-w-[260px]">
             Live from your Telegram voice notes • Powered by Gemini 2.5 Flash
           </div>
         </div>
 
         {/* === ADVANCED FILTERS (the star of the show) === */}
-        <div className="glass p-6 mb-8 min-h-[140px] w-full">
+        <div className="glass p-4 sm:p-6 mb-8 min-h-[140px] w-full">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-sm font-medium text-white/80">
               <Filter size={16} /> ADVANCED FILTERS <span className="text-xs text-white/40">(live updates)</span>
@@ -404,11 +404,11 @@ export default function PersonalFinanceDashboard() {
             <div className="lg:col-span-2">
               <div className="text-xs text-white/60 mb-1.5">AMOUNT</div>
               <div className="flex gap-2">
-                <div>
+                <div className="flex-1 min-w-0">
                   <div className="text-[10px] text-white/50">MIN</div>
                   <input type="number" value={minAmount} onChange={e => setMinAmount(Number(e.target.value))} className="glass w-full px-3 py-2 text-sm rounded-2xl bg-transparent border border-white/15" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <div className="text-[10px] text-white/50">MAX</div>
                   <input type="number" value={maxAmount} onChange={e => setMaxAmount(Number(e.target.value))} className="glass w-full px-3 py-2 text-sm rounded-2xl bg-transparent border border-white/15" />
                 </div>
@@ -452,34 +452,34 @@ export default function PersonalFinanceDashboard() {
 
         {/* === KPIs (glass) === */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="glass p-6">
+          <div className="glass p-4 sm:p-6">
             <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
               <DollarSign size={15} /> TOTAL SPENT (FILTERED)
             </div>
-            <div className="text-5xl font-semibold tracking-[-1.8px] text-lime tabular-nums">₹{totalSpent.toLocaleString()}</div>
+            <div className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-1.8px] text-lime tabular-nums">₹{totalSpent.toLocaleString()}</div>
             <div className="text-xs text-white/50 mt-1">Avg ₹{avgPerDay}/day over {uniqueDays} days</div>
           </div>
 
-          <div className="glass p-6">
+          <div className="glass p-4 sm:p-6">
             <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
               <TrendingUp size={15} /> AVERAGE DAILY
             </div>
-            <div className="text-5xl font-semibold tracking-[-1.8px] text-blue tabular-nums">₹{avgPerDay}</div>
+            <div className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-1.8px] text-blue tabular-nums">₹{avgPerDay}</div>
           </div>
 
-          <div className="glass p-6">
+          <div className="glass p-4 sm:p-6">
             <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
               <Target size={15} /> TRANSACTIONS SHOWN
             </div>
-            <div className="text-5xl font-semibold tracking-[-1.8px]">{txnCount}</div>
+            <div className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-1.8px]">{txnCount}</div>
             <div className="text-xs text-white/50 mt-1">of {transactions.length} total</div>
           </div>
 
-          <div className="glass p-6">
+          <div className="glass p-4 sm:p-6">
             <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
               <Calendar size={15} /> BIGGEST LEAK
             </div>
-            <div className="text-4xl font-semibold tracking-[-1.2px] capitalize text-lime">{topCategory?.name || "food"}</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-1.2px] capitalize text-lime truncate">{topCategory?.name || "food"}</div>
             <div className="text-sm text-white/70 mt-0.5">{topCategory?.pct}% of spend</div>
           </div>
         </div>
@@ -517,7 +517,7 @@ export default function PersonalFinanceDashboard() {
         {/* === CHARTS ROW (rich & interactive) === */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 mb-8">
           {/* Category Breakdown - clickable pie */}
-          <div className="glass p-6 lg:col-span-2">
+          <div className="glass p-4 sm:p-6 lg:col-span-2">
             <div className="font-medium tracking-tight mb-4 flex items-center justify-between">
               CATEGORY BREAKDOWN
               <span className="text-xs text-white/50">Click slice to filter</span>
@@ -556,7 +556,7 @@ export default function PersonalFinanceDashboard() {
           </div>
 
           {/* Daily Trend - Area + Line (much nicer than plain bar) */}
-          <div className="glass p-6 lg:col-span-3">
+          <div className="glass p-4 sm:p-6 lg:col-span-3">
             <div className="font-medium tracking-tight mb-3">SPENDING OVER TIME</div>
             <div className="h-[300px] w-full -mx-4 -mb-4">
               <ResponsiveContainer width="100%" height="100%">
@@ -573,7 +573,7 @@ export default function PersonalFinanceDashboard() {
           </div>
 
           {/* Top Individual Expenses */}
-          <div className="glass p-6 lg:col-span-3">
+          <div className="glass p-4 sm:p-6 lg:col-span-3">
             <div className="font-medium tracking-tight mb-4">YOUR BIGGEST SINGLE EXPENSES</div>
             <div className="space-y-2">
               {topExpenses.map((item, idx) => (
@@ -593,7 +593,7 @@ export default function PersonalFinanceDashboard() {
           </div>
 
           {/* Day of Week Heat */}
-          <div className="glass p-6 lg:col-span-2">
+          <div className="glass p-4 sm:p-6 lg:col-span-2">
             <div className="font-medium tracking-tight mb-4">SPEND BY DAY OF WEEK</div>
             <div className="h-[260px] w-full -mx-2">
               <ResponsiveContainer width="100%" height="100%">
@@ -610,7 +610,7 @@ export default function PersonalFinanceDashboard() {
         </div>
 
         {/* === INTERACTIVE TRANSACTIONS TABLE === */}
-        <div className="glass p-6 mb-8">
+        <div className="glass p-4 sm:p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="font-medium tracking-tight">Filtered Transactions ({filteredTransactions.length})</div>
             <div className="text-xs text-white/50">Click column headers to sort • Click category to filter</div>
@@ -665,8 +665,8 @@ export default function PersonalFinanceDashboard() {
 
       {/* Add Manual Modal */}
       {showAdd && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]" onClick={() => setShowAdd(false)}>
-          <div className="glass p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4" onClick={() => setShowAdd(false)}>
+          <div className="glass p-6 sm:p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
             <div className="font-semibold text-xl mb-5 tracking-tight">Add expense</div>
 
             <input
