@@ -62,8 +62,29 @@ export default function PersonalFinanceDashboard() {
   const [sortBy, setSortBy] = useState<"date" | "amount" | "description">("date");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
 
-  // Local mutable data for demo (add manual + filters)
-  const [transactions, setTransactions] = useState<Transaction[]>(baseTransactions);
+  // Live data from Supabase
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch real transactions from Supabase once deployed
+  React.useEffect(() => {
+    async function loadTransactions() {
+      try {
+        const res = await fetch("/api/transactions");
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setTransactions(data);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load transactions", e);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadTransactions();
+  }, []);
 
   // === Live Filtering ===
   const filteredTransactions = useMemo(() => {
